@@ -13,11 +13,12 @@ llm = OpenAI()
 @st.cache_resource
 def load_index():
     """Loads the index."""
-    pass
+    st.session_state["index"] = True
+    return ""
 
 
 def query_index(index, query):
-    pass
+    return "My favorite fall vegetable is a sweet potato."
 
 
 def load_chain(index):
