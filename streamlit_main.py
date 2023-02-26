@@ -31,8 +31,8 @@ def load_index():
     st.session_state["index"] = True
 
     pinecone.init(
-        api_key="",  # find at app.pinecone.io
-        environment=os.environ["PINECONE_API_KEY"]  # next to api key in console
+        api_key=os.environ["PINECONE_API_KEY"],  # find at app.pinecone.io
+        environment="us-east1-gcp"  # next to api key in console
     )
     embeddings = OpenAIEmbeddings(openai_api_key=os.environ["OPENAI_API_KEY"])
     return Pinecone.from_existing_index("hackathon", embeddings)
