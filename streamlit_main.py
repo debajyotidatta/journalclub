@@ -4,6 +4,9 @@ from streamlit_chat import message
 
 import os
 
+from langchain import OpenAI, VectorDBQA
+from langchain.vectorstores import Pinecone, VectorStore
+from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.agents import initialize_agent, Tool
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.chains.llm import LLMChain
@@ -19,31 +22,33 @@ from langchain.docstore.document import Document
 
 import pinecone
 
-# initialize pinecone
-pinecone.init(
-    api_key="",  # find at app.pinecone.io
-    environment=os.environ["PINECONE_API_KEY"]  # next to api key in console
-)
-index_name = "hackathon"
-docsearch = Pinecone.from_documents(docs, embeddings, index_name=index_name)
-query = "What is the health relevance of blood Glycocholic acid in humans?"
+
 
 
 @st.cache_resource
 def load_index():
     """Loads the index."""
     st.session_state["index"] = True
-    return ""
+
+    pinecone.init(
+        api_key="",  # find at app.pinecone.io
+        environment=os.environ["PINECONE_API_KEY"]  # next to api key in console
+    )
+    embeddings = OpenAIEmbeddings(openai_api_key=os.environ["OPENAI_API_KEY"])
+    return Pinecone.from_existing_index("hackathon", embeddings)
 
 
 def query_index(llm, index, query):
     """Returns top 10 chunks."""
-    # docs = docsearch.similarity_search(query)
-    docs = [
-        Document(page_content="My favorite fall vegetable is a sweet potato."),
-        Document(page_content="Sweet potatoes are spherical."),
-        Document(page_content="Fall is better than spring."),
-    ]
+    num_matches = 10
+
+    docs = index.similarity_search_with_score(query, k=num_matches)
+
+    # docs = [
+    #     Document(page_content="My favorite fall vegetable is a sweet potato."),
+    #     Document(page_content="Sweet potatoes are spherical."),
+    #     Document(page_content="Fall is better than spring."),
+    # ]
     llm_chain = LLMChain(
         llm=llm, prompt=map_reduce_prompt.QUESTION_PROMPT, verbose=True)
     reduce_chain = StuffDocumentsChain(
