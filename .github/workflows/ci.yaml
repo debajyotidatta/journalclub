@@ -1,0 +1,9 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  CI:
+    uses: armand-sauzay/actions-python/.github/workflows/python-ci.yaml@v1
