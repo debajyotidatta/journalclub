@@ -1,0 +1,11 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  RELEASE:
+    uses: armand-sauzay/actions-python/.github/workflows/python-release.yaml@v1
