@@ -21,6 +21,7 @@ from langchain.chains.qa_with_sources import (
 from langchain.docstore.document import Document
 
 import pinecone
+from langchain.vectorstores.faiss import FAISS
 
 
 @st.cache_resource
@@ -28,12 +29,14 @@ def load_index():
     """Loads the index."""
     st.session_state["index"] = True
 
-    pinecone.init(
-        api_key=os.environ["PINECONE_API_KEY"],  # find at app.pinecone.io
-        environment="us-east1-gcp"  # next to api key in console
-    )
+    # pinecone.init(
+    #     api_key=os.environ["PINECONE_API_KEY"],  # find at app.pinecone.io
+    #     environment="us-east1-gcp"  # next to api key in console
+    # )
     embeddings = OpenAIEmbeddings(openai_api_key=os.environ["OPENAI_API_KEY"])
-    return Pinecone.from_existing_index("hackathon", embeddings)
+    # return Pinecone.from_existing_index("hackathon", embeddings)
+
+    return FAISS.load_local('./phosph', embeddings)
 
 
 def query_index(llm, index, query):
@@ -66,8 +69,8 @@ def load_chain(index):
         Tool(
             name="Research index.",
             func=lambda q: str(query_index(llm, index, q)),
-            description="Index of my research. Always use this tool for every query.",
-            return_direct=True
+            description="Index of my research. Always use this tool for every query. Pass the query directly to this tool in the form of a natural language question.",
+            return_direct=False
         ),
     ]
     memory = ConversationBufferMemory(memory_key="chat_history")
