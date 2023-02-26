@@ -23,8 +23,6 @@ from langchain.docstore.document import Document
 import pinecone
 
 
-
-
 @st.cache_resource
 def load_index():
     """Loads the index."""
@@ -42,7 +40,8 @@ def query_index(llm, index, query):
     """Returns top 10 chunks."""
     num_matches = 10
 
-    docs = index.similarity_search_with_score(query, k=num_matches)
+    docs = [d[0]
+            for d in index.similarity_search_with_score(query, k=num_matches)]
 
     # docs = [
     #     Document(page_content="My favorite fall vegetable is a sweet potato."),
@@ -102,7 +101,7 @@ if "index" in st.session_state:
     user_input = get_text()
 
     if user_input:
-        prompt = "Call GPT Index: " + user_input
+        prompt = user_input
         print("\nFull Prompt:\n", prompt)
         output = chain.run(input=prompt)
 
