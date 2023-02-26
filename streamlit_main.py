@@ -2,6 +2,8 @@
 import streamlit as st
 from streamlit_chat import message
 
+import os
+
 from langchain.agents import initialize_agent, Tool
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.chains.llm import LLMChain
@@ -15,15 +17,16 @@ from langchain.chains.qa_with_sources import (
 )
 from langchain.docstore.document import Document
 
-# import pinecone
-# # initialize pinecone
-# pinecone.init(
-#     api_key="YOUR_API_KEY",  # find at app.pinecone.io
-#     environment="YOUR_ENV"  # next to api key in console
-# )
-# index_name = "langchain-demo"
-# docsearch = Pinecone.from_documents(docs, embeddings, index_name=index_name)
-# query = "What did the president say about Ketanji Brown Jackson"
+import pinecone
+
+# initialize pinecone
+pinecone.init(
+    api_key="",  # find at app.pinecone.io
+    environment=os.environ["PINECONE_API_KEY"]  # next to api key in console
+)
+index_name = "hackathon"
+docsearch = Pinecone.from_documents(docs, embeddings, index_name=index_name)
+query = "What is the health relevance of blood Glycocholic acid in humans?"
 
 
 @st.cache_resource
